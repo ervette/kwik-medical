@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Ambulance Screen - Assigned Rescue Operations</title>
+</head>
+<body>
+    <h1>Assigned Rescue Operations</h1>
+    <ul>
+        <li th:each="operation : ${operations}">
+            <p>Patient: <span th:text="${operation.patient.name}"></span></p>
+            <p>Patient ID: <span th:text="${operation.patient.patientId}"></span></p>
+            <p>Location: <span th:text="${operation.location}"></span></p>
+            <p>Status: <span th:text="${operation.status}"></span></p>
+            <p>Hospital: <span th:text="${operation.hospital.name}"></span></p>
+            <p>Ambulance: <span th:text="${operation.ambulance.registrationNumber}"></span></p>
+            <hr/>
+        </li>
+    </ul>
+</body>
+</html>
