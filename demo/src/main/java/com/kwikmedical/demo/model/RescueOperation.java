@@ -27,7 +27,7 @@ public class RescueOperation {
     private Ambulance ambulance;
 
     private String location;
-    private String status; // "Dispatched", "In Progress", "Completed"
+    private String status;
     private LocalDateTime createdAt = LocalDateTime.now();
 
     // Getters and Setters

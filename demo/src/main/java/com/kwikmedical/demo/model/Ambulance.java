@@ -13,9 +13,7 @@ public class Ambulance {
 
     private String registrationNumber;
     private String location;
-    private String status; // e.g., "Available", "In Transit", "Out of Service"
-
-    // Getters and Setters
+    private String status; 
 
     public Long getAmbulanceId() {
         return ambulanceId;

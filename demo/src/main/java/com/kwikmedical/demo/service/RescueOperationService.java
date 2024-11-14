@@ -1,5 +1,7 @@
 package com.kwikmedical.demo.service;
 
+import com.kwikmedical.demo.events.EventBroker;
+import com.kwikmedical.demo.events.RescueRequestEvent;
 import com.kwikmedical.demo.model.Ambulance;
 import com.kwikmedical.demo.model.Hospital;
 import com.kwikmedical.demo.model.Patient;
@@ -29,6 +31,9 @@ public class RescueOperationService {
     @Autowired
     private AmbulanceRepository ambulanceRepository;
 
+    @Autowired
+    private EventBroker eventBroker;
+
     public List<RescueOperation> getAllRescueOperations() {
         return rescueOperationRepository.findAll();
     }
@@ -57,7 +62,12 @@ public class RescueOperationService {
             ambulance.get().setStatus("In Transit");
             ambulanceRepository.save(ambulance.get());
 
-            return rescueOperationRepository.save(operation);
+            rescueOperationRepository.save(operation);
+
+            RescueRequestEvent event = new RescueRequestEvent(patientId, location);
+            eventBroker.publish(event);
+
+            return operation;
         } else {
             throw new RuntimeException("Invalid patient, hospital, or ambulance ID provided.");
         }

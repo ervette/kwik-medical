@@ -16,8 +16,6 @@ public class Patient {
 
     private String location;
 
-    // Getters and Setters
-
     public String getPatientId() {
         return patientId;
     }

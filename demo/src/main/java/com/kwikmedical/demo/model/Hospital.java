@@ -12,7 +12,6 @@ public class Hospital {
     private String address;
     private String contactNumber;
 
-    // Getters and Setters
 
     public Long getHospitalId() {
         return hospitalId;
