@@ -14,16 +14,16 @@ public class RescueOperation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
     @ManyToOne
-    @JoinColumn(name = "hospital_id")
+    @JoinColumn(name = "hospital_id", nullable = false)
     private Hospital hospital;
 
     @ManyToOne
-    @JoinColumn(name = "ambulance_id")
+    @JoinColumn(name = "ambulance_id", nullable = false)
     private Ambulance ambulance;
 
     private String location;

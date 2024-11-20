@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 @Entity
 public class Patient {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "patient_id")
     private String patientId;
 
     @Column(nullable = false)

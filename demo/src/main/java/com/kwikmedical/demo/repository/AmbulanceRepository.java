@@ -8,5 +8,5 @@ import java.util.List;
 @Repository
 public interface AmbulanceRepository extends JpaRepository<Ambulance, Long> {
     List<Ambulance> findByStatus(String status);
-    List<Ambulance> findByLocationAndStatus(String location, String status);
 }
+

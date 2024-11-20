@@ -1,5 +1,9 @@
 package com.kwikmedical.demo.controller;
 
+import com.kwikmedical.demo.model.Ambulance;
+import com.kwikmedical.demo.model.RescueOperation;
+import com.kwikmedical.demo.repository.AmbulanceRepository;
+import com.kwikmedical.demo.repository.RescueOperationRepository;
 import com.kwikmedical.demo.service.AmbulanceService;
 import com.kwikmedical.demo.service.RescueOperationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,32 +11,42 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
+@RequestMapping("/ambulance")
 public class AmbulanceController {
 
-    @Autowired
-    private AmbulanceService ambulanceService;
+    private final RescueOperationRepository rescueOperationRepository;
+    private final AmbulanceRepository ambulanceRepository;
 
-    @Autowired
-    private RescueOperationService rescueOperationService;
+    public AmbulanceController(RescueOperationRepository rescueOperationRepository,
+                               AmbulanceRepository ambulanceRepository) {
+        this.rescueOperationRepository = rescueOperationRepository;
+        this.ambulanceRepository = ambulanceRepository;
+    }
 
-    @GetMapping("/ambulance")
-    public String showAmbulanceScreen(@RequestParam Long ambulanceId, Model model) {
-        var operations = rescueOperationService.getRescueOperationsByAmbulanceAndStatus(ambulanceId, "Dispatched");
-        model.addAttribute("operations", operations);
-        model.addAttribute("ambulanceId", ambulanceId);
+    @GetMapping
+    public String ambulanceDashboard(Model model) {
+        model.addAttribute("operations", rescueOperationRepository.findActiveRescueOperations());
         return "ambulance";
     }
 
-    @PostMapping("/ambulance/confirm-delivery")
-    public String confirmDelivery(
-            @RequestParam Long operationId,
-            @RequestParam Long ambulanceId) {
-        rescueOperationService.updateRescueOperationStatus(operationId, "Delivered");
-        ambulanceService.updateAmbulanceStatus(ambulanceId, "Available");
-        return "redirect:/ambulance?ambulanceId=" + ambulanceId;
-    }
+    @PostMapping("/confirm-delivery")
+    public String confirmDelivery(@RequestParam Long operationId, @RequestParam Long ambulanceId) {
+        // Mark rescue operation as complete
+        RescueOperation operation = rescueOperationRepository.findById(operationId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid operation ID."));
+        operation.setStatus("Completed");
+        rescueOperationRepository.save(operation);
 
+        // Mark ambulance as available
+        Ambulance ambulance = ambulanceRepository.findById(ambulanceId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid ambulance ID."));
+        ambulance.setStatus("Available");
+        ambulanceRepository.save(ambulance);
+
+        return "redirect:/ambulance";
+    }
 }

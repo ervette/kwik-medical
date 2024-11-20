@@ -1,37 +1,26 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <title>Ambulance Screen - Assigned Rescue Operations</title>
-  </head>
-  <body>
+<head>
+    <title>Ambulance Dashboard</title>
+</head>
+<body>
     <h1>Assigned Rescue Operations</h1>
 
     <div th:if="${operations.isEmpty()}">
-      <p>No current requests</p>
+        <p>No current requests</p>
     </div>
 
     <ul th:if="${!operations.isEmpty()}">
-      <li th:each="operation : ${operations}">
-        <p>Patient: <span th:text="${operation.patient.name}"></span></p>
-        <p>Location: <span th:text="${operation.location}"></span></p>
-        <p>Hospital: <span th:text="${operation.hospital.name}"></span></p>
-        <form method="POST" action="/ambulance/confirm-delivery">
-          <input type="hidden" name="operationId" value="${operation.id}" />
-          <input
-            type="hidden"
-            name="ambulanceId"
-            value="${operation.ambulance.ambulanceId}"
-          />
-          <input
-            type="hidden"
-            name="hospitalId"
-            value="${operation.hospital.hospitalId}"
-          />
-          <button type="submit">Confirm Delivery</button>
-        </form>
-
-        <hr />
-      </li>
+        <li th:each="operation : ${operations}">
+            <p>Patient: <span th:text="${operation.patient.name}"></span></p>
+            <p>Location: <span th:text="${operation.location}"></span></p>
+            <p>Hospital: <span th:text="${operation.hospital.name}"></span></p>
+            <form th:action="@{/ambulance/confirm-delivery}" method="post">
+                <input type="hidden" name="operationId" th:value="${operation.id}" />
+                <input type="hidden" name="ambulanceId" th:value="${operation.ambulance.ambulanceId}" />
+                <button type="submit">Confirm Delivery</button>
+            </form>
+        </li>
     </ul>
-  </body>
+</body>
 </html>

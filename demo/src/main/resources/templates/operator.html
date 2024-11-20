@@ -7,7 +7,7 @@
     <h1>Operator Dashboard</h1>
 
     <h2>Create a Rescue Operation</h2>
-    <form action="#" th:action="@{/operator}" method="post">
+    <form th:action="@{/operator/create-rescue}" method="post">
         <label for="patient">Select Patient:</label>
         <select name="patientId" id="patient" required>
             <option th:each="patient : ${patients}" th:value="${patient.patientId}" th:text="${patient.name}"></option>
@@ -20,7 +20,9 @@
 
         <label for="ambulance">Select Ambulance:</label>
         <select name="ambulanceId" id="ambulance" required>
-            <option th:each="ambulance : ${ambulances}" th:value="${ambulance.ambulanceId}" th:text="${ambulance.ambulanceId}"></option>
+            <option th:each="ambulance : ${ambulances}" th:value="${ambulance.ambulanceId}"
+                    th:disabled="${ambulance.status != 'Available'}"
+                    th:text="${ambulance.registrationNumber}"></option>
         </select>
 
         <label for="location">Location:</label>

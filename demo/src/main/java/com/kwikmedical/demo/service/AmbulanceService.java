@@ -4,9 +4,12 @@ import com.kwikmedical.demo.events.EventBroker;
 import com.kwikmedical.demo.events.RescueRequestEvent;
 import com.kwikmedical.demo.events.AmbulanceDispatchEvent;
 import com.kwikmedical.demo.model.Ambulance;
+import com.kwikmedical.demo.events.AmbulanceStatusUpdatedEvent;
 import com.kwikmedical.demo.repository.AmbulanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import jakarta.annotation.PostConstruct;
 import java.util.List;
@@ -38,14 +41,16 @@ public class AmbulanceService {
         return ambulanceRepository.findByStatus("Available");
     }
 
+    @Transactional
     public void updateAmbulanceStatus(Long ambulanceId, String status) {
         Ambulance ambulance = ambulanceRepository.findById(ambulanceId)
                 .orElseThrow(() -> new IllegalArgumentException("Ambulance with ID " + ambulanceId + " not found"));
-                
+
         ambulance.setStatus(status);
         ambulanceRepository.save(ambulance);
-    
-        System.out.println("Updated ambulance ID: " + ambulanceId + " to status: " + status);
+
+
+        eventBroker.publish(new AmbulanceStatusUpdatedEvent(ambulanceId, status));
     }
     
     
