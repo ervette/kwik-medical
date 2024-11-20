@@ -5,10 +5,14 @@
 </head>
 <body>
     <h1>Incoming Rescue Operations</h1>
-    <ul>
+
+    <div th:if="${operations.isEmpty()}">
+        <p>No current requests</p>
+    </div>
+
+    <ul th:if="${!operations.isEmpty()}">
         <li th:each="operation : ${operations}">
             <p>Patient: <span th:text="${operation.patient.name}"></span></p>
-            <p>Patient ID: <span th:text="${operation.patient.patientId}"></span></p>
             <p>Ambulance: <span th:text="${operation.ambulance.registrationNumber}"></span></p>
             <p>Location: <span th:text="${operation.location}"></span></p>
             <p>Status: <span th:text="${operation.status}"></span></p>

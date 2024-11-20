@@ -9,4 +9,6 @@ import java.util.List;
 public interface RescueOperationRepository extends JpaRepository<RescueOperation, Long> {
     List<RescueOperation> findByStatus(String status);
     List<RescueOperation> findByPatient_PatientId(String patientId);
+    List<RescueOperation> findByAmbulance_AmbulanceIdAndStatus(Long ambulanceId, String status);
+    List<RescueOperation> findByHospital_HospitalIdAndStatus(Long hospitalId, String status);
 }

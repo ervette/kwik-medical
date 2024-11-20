@@ -34,32 +34,32 @@ public class AmbulanceService {
         return ambulanceRepository.findById(ambulanceId);
     }
 
-    public List<Ambulance> getAvailableAmbulancesByLocation(String location) {
-        return ambulanceRepository.findByLocationAndStatus(location, "Available");
+    public List<Ambulance> getAvailableAmbulances() {
+        return ambulanceRepository.findByStatus("Available");
     }
 
+    public void updateAmbulanceStatus(Long ambulanceId, String status) {
+        Ambulance ambulance = ambulanceRepository.findById(ambulanceId)
+                .orElseThrow(() -> new IllegalArgumentException("Ambulance with ID " + ambulanceId + " not found"));
+                
+        ambulance.setStatus(status);
+        ambulanceRepository.save(ambulance);
+    
+        System.out.println("Updated ambulance ID: " + ambulanceId + " to status: " + status);
+    }
+    
+    
     private void onRescueRequest(RescueRequestEvent event) {
-        List<Ambulance> availableAmbulances = getAvailableAmbulancesByLocation(event.getLocation());
+        List<Ambulance> availableAmbulances = getAvailableAmbulances();
         if (!availableAmbulances.isEmpty()) {
             Ambulance ambulance = availableAmbulances.get(0);
             ambulance.setStatus("In Transit");
             ambulanceRepository.save(ambulance);
 
             AmbulanceDispatchEvent dispatchEvent = new AmbulanceDispatchEvent(
-                    ambulance.getAmbulanceId(), event.getPatientId(), event.getLocation()
-            );
+                    ambulance.getAmbulanceId(), event.getPatientId(), event.getLocation());
             eventBroker.publish(dispatchEvent);
         }
     }
 
-    public Ambulance updateAmbulanceStatus(Long ambulanceId, String status) {
-        Optional<Ambulance> optionalAmbulance = ambulanceRepository.findById(ambulanceId);
-        if (optionalAmbulance.isPresent()) {
-            Ambulance ambulance = optionalAmbulance.get();
-            ambulance.setStatus(status);
-            return ambulanceRepository.save(ambulance);
-        } else {
-            throw new RuntimeException("Ambulance not found with ID: " + ambulanceId);
-        }
-    }
 }

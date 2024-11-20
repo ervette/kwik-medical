@@ -3,7 +3,6 @@ package com.kwikmedical.demo.controller;
 import com.kwikmedical.demo.model.Patient;
 import com.kwikmedical.demo.model.Hospital;
 import com.kwikmedical.demo.model.Ambulance;
-import com.kwikmedical.demo.model.RescueOperation;
 import com.kwikmedical.demo.service.PatientService;
 import com.kwikmedical.demo.service.HospitalService;
 import com.kwikmedical.demo.service.AmbulanceService;
@@ -14,7 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import java.util.List;
 
 @Controller
@@ -36,7 +34,7 @@ public class OperatorController {
     public String showOperatorScreen(Model model) {
         List<Patient> patients = patientService.getAllPatients();
         List<Hospital> hospitals = hospitalService.getAllHospitals();
-        List<Ambulance> ambulances = ambulanceService.getAvailableAmbulancesByLocation("Edinburgh"); // Assuming location is Edinburgh
+        List<Ambulance> ambulances = ambulanceService.getAvailableAmbulances(); // Fetch all available ambulances
 
         model.addAttribute("patients", patients);
         model.addAttribute("hospitals", hospitals);
@@ -50,7 +48,7 @@ public class OperatorController {
             @RequestParam Long hospitalId,
             @RequestParam Long ambulanceId,
             @RequestParam String location) {
-        
+
         rescueOperationService.createRescueOperation(patientId, hospitalId, ambulanceId, location);
         return "redirect:/operator";
     }

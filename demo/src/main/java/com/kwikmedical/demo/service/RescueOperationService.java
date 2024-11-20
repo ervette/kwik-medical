@@ -34,53 +34,63 @@ public class RescueOperationService {
     @Autowired
     private EventBroker eventBroker;
 
-    public List<RescueOperation> getAllRescueOperations() {
-        return rescueOperationRepository.findAll();
-    }
-
     public List<RescueOperation> getRescueOperationsByStatus(String status) {
         return rescueOperationRepository.findByStatus(status);
     }
 
-    public List<RescueOperation> getRescueOperationsByPatientId(String patientId) {
-        return rescueOperationRepository.findByPatient_PatientId(patientId);
+    public void updateRescueOperationStatus(Long operationId, String status) {
+        RescueOperation operation = rescueOperationRepository.findById(operationId)
+                .orElseThrow(() -> new IllegalArgumentException("Rescue Operation not found"));
+
+        // Update rescue operation status
+        operation.setStatus(status);
+        rescueOperationRepository.save(operation);
+
+        System.out.println("Updated rescue operation ID: " + operationId + " to status: " + status);
+
+        // If the operation is completed, update the ambulance status to "Available"
+        if ("Delivered".equalsIgnoreCase(status)) {
+            Ambulance ambulance = operation.getAmbulance();
+            if (ambulance != null) {
+                ambulance.setStatus("Available");
+                ambulanceRepository.save(ambulance);
+                System.out.println("Ambulance ID: " + ambulance.getAmbulanceId() + " is now available.");
+            }
+        }
+    }
+
+    public List<RescueOperation> getRescueOperationsByAmbulanceAndStatus(Long ambulanceId, String status) {
+        return rescueOperationRepository.findByAmbulance_AmbulanceIdAndStatus(ambulanceId, status);
     }
 
     public RescueOperation createRescueOperation(String patientId, Long hospitalId, Long ambulanceId, String location) {
         Optional<Patient> patient = patientRepository.findById(patientId);
         Optional<Hospital> hospital = hospitalRepository.findById(hospitalId);
         Optional<Ambulance> ambulance = ambulanceRepository.findById(ambulanceId);
-
+    
         if (patient.isPresent() && hospital.isPresent() && ambulance.isPresent()) {
+            if (!"Available".equalsIgnoreCase(ambulance.get().getStatus())) {
+                throw new RuntimeException("Ambulance is not available for dispatch.");
+            }
+    
             RescueOperation operation = new RescueOperation();
             operation.setPatient(patient.get());
             operation.setHospital(hospital.get());
             operation.setAmbulance(ambulance.get());
             operation.setLocation(location);
             operation.setStatus("Dispatched");
-
+    
             ambulance.get().setStatus("In Transit");
-            ambulanceRepository.save(ambulance.get());
-
+            ambulanceRepository.save(ambulance.get()); // Update ONLY this ambulance
+    
             rescueOperationRepository.save(operation);
-
             RescueRequestEvent event = new RescueRequestEvent(patientId, location);
             eventBroker.publish(event);
-
+    
             return operation;
         } else {
             throw new RuntimeException("Invalid patient, hospital, or ambulance ID provided.");
         }
     }
-
-    public RescueOperation updateRescueOperationStatus(Long operationId, String status) {
-        Optional<RescueOperation> operation = rescueOperationRepository.findById(operationId);
-        if (operation.isPresent()) {
-            RescueOperation rescueOperation = operation.get();
-            rescueOperation.setStatus(status);
-            return rescueOperationRepository.save(rescueOperation);
-        } else {
-            throw new RuntimeException("Rescue operation not found with ID: " + operationId);
-        }
-    }
+    
 }

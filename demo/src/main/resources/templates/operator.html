@@ -1,37 +1,32 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Operator Screen - Create Rescue Operation</title>
+    <title>Operator Dashboard</title>
 </head>
 <body>
-    <h1>Dispatch Rescue Operation</h1>
-    <form action="/operator" method="post">
-        <label>Patient:</label>
-        <select name="patientId" required>
-            <option th:each="patient : ${patients}" th:value="${patient.patientId}"
-                    th:text="${patient.name} + ' - ' + ${patient.location}"></option>
+    <h1>Operator Dashboard</h1>
+
+    <h2>Create a Rescue Operation</h2>
+    <form action="#" th:action="@{/operator}" method="post">
+        <label for="patient">Select Patient:</label>
+        <select name="patientId" id="patient" required>
+            <option th:each="patient : ${patients}" th:value="${patient.patientId}" th:text="${patient.name}"></option>
         </select>
-        <br/>
 
-        <label>Hospital:</label>
-        <select name="hospitalId" required>
-            <option th:each="hospital : ${hospitals}" th:value="${hospital.hospitalId}"
-                    th:text="${hospital.name} + ' - ' + ${hospital.address}"></option>
+        <label for="hospital">Select Hospital:</label>
+        <select name="hospitalId" id="hospital" required>
+            <option th:each="hospital : ${hospitals}" th:value="${hospital.hospitalId}" th:text="${hospital.name}"></option>
         </select>
-        <br/>
 
-        <label>Ambulance:</label>
-        <select name="ambulanceId" required>
-            <option th:each="ambulance : ${ambulances}" th:value="${ambulance.ambulanceId}"
-                    th:text="${ambulance.registrationNumber} + ' - ' + ${ambulance.status}"></option>
+        <label for="ambulance">Select Ambulance:</label>
+        <select name="ambulanceId" id="ambulance" required>
+            <option th:each="ambulance : ${ambulances}" th:value="${ambulance.ambulanceId}" th:text="${ambulance.ambulanceId}"></option>
         </select>
-        <br/>
 
-        <label>Location:</label>
-        <input type="text" name="location" placeholder="Enter dispatch location" required/>
-        <br/>
+        <label for="location">Location:</label>
+        <input type="text" name="location" id="location" required/>
 
-        <button type="submit">Dispatch Rescue</button>
+        <button type="submit">Create Rescue Operation</button>
     </form>
 </body>
 </html>
