@@ -1,23 +1,41 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
+  <head>
     <title>Hospital Screen - Incoming Patients</title>
-</head>
-<body>
-    <h1>Incoming Rescue Operations</h1>
+  </head>
+  <body>
+    <h1>Hospital Operations</h1>
 
+    <h2 th:text="${hospital.name}"></h2>
+    <p>Address: <span th:text="${hospital.address}"></span></p>
+    <p>Contact: <span th:text="${hospital.contactNumber}"></span></p>
+
+    <h3>Incoming Rescue Operations</h3>
     <div th:if="${operations.isEmpty()}">
-        <p>No current requests</p>
+      <p>No current requests</p>
     </div>
 
     <ul th:if="${!operations.isEmpty()}">
-        <li th:each="operation : ${operations}">
-            <p>Patient: <span th:text="${operation.patient.name}"></span></p>
-            <p>Ambulance: <span th:text="${operation.ambulance.registrationNumber}"></span></p>
-            <p>Location: <span th:text="${operation.location}"></span></p>
-            <p>Status: <span th:text="${operation.status}"></span></p>
-            <hr/>
-        </li>
+      <li th:each="operation : ${operations}">
+        <p>Patient: <span th:text="${operation.patient.name}"></span></p>
+        <p>
+          Ambulance:
+          <span th:text="${operation.ambulance.registrationNumber}"></span>
+        </p>
+        <p>Location: <span th:text="${operation.location}"></span></p>
+        <p>Status: <span th:text="${operation.status}"></span></p>
+
+        <form th:action="@{/hospital/update-operation}" method="post">
+          <input
+            type="hidden"
+            th:name="operationId"
+            th:value="${operation.id}"
+          />
+          <input type="hidden" name="status" value="Complete" />
+          <button type="submit">Mark as Complete</button>
+        </form>
+        <hr />
+      </li>
     </ul>
-</body>
+  </body>
 </html>

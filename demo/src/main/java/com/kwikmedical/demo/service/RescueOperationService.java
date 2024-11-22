@@ -39,6 +39,17 @@ public class RescueOperationService {
         return rescueOperationRepository.findByStatus(status);
     }
 
+    public List<RescueOperation> getRescueOperationsByHospitalAndStatus(Long hospitalId, String status) {
+        return rescueOperationRepository.findRescueOperationsByHospitalAndStatus(hospitalId, status);
+    }
+
+    public void updateOperationStatus(Long operationId, String newStatus) {
+        RescueOperation operation = rescueOperationRepository.findById(operationId)
+                .orElseThrow(() -> new IllegalArgumentException("Operation not found"));
+        operation.setStatus(newStatus);
+        rescueOperationRepository.save(operation);
+    }
+
     public void createRescueOperation(String patientId, Long hospitalId, Long ambulanceId, String location) {
         Patient patient = patientRepository.findById(patientId)
                 .orElseThrow();
@@ -59,7 +70,6 @@ public class RescueOperationService {
 
         rescueOperationRepository.save(operation);
 
-        // Update ambulance status
         ambulance.setStatus("In Transit");
         ambulanceRepository.save(ambulance);
     }
