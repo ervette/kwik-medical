@@ -35,13 +35,11 @@ public class AmbulanceController {
 
     @PostMapping("/confirm-delivery")
     public String confirmDelivery(@RequestParam Long operationId, @RequestParam Long ambulanceId) {
-        // Mark rescue operation as complete
         RescueOperation operation = rescueOperationRepository.findById(operationId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid operation ID."));
         operation.setStatus("Completed");
         rescueOperationRepository.save(operation);
 
-        // Mark ambulance as available
         Ambulance ambulance = ambulanceRepository.findById(ambulanceId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid ambulance ID."));
         ambulance.setStatus("Available");
