@@ -36,7 +36,7 @@ public class HospitalController {
     @PostMapping("/hospital/update-operation")
     public String updateOperationStatus(@RequestParam Long operationId, @RequestParam String status) {
         rescueOperationService.updateOperationStatus(operationId, status);
-        return "redirect:/hospital?hospitalId=1";
+        return "redirect:/hospital";
     }
 }
 
